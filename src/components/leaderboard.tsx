@@ -2,13 +2,14 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { BadgeCheck, MapPin } from "lucide-react";
+import { BadgeCheck, CalendarDays, MapPin } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { publicClaims } from "@/lib/analytics";
-import type { ClaimType, EarningClaim, MentorOffer } from "@/lib/types";
+import type { ClaimType, EarningClaim } from "@/lib/types";
 import { getMentorOfferForClaim, getUser } from "@/lib/data";
 
-const claimTypes: { value: ClaimType | "all"; label: string }[] = [
+const claimTypes: { value: ClaimType | "all" | "mentors"; label: string }[] = [
+  { value: "mentors",  label: "Mentors"   },
   { value: "all",      label: "All"       },
   { value: "career",   label: "Career"    },
   { value: "business", label: "Business"  },
@@ -41,10 +42,7 @@ function EarnerRow({ claim, rank }: { claim: EarningClaim; rank: number }) {
   const displayName = claim.displayAnonymously ? user?.anonymousName : user?.name;
 
   return (
-    <Link
-      href={`/profile/${claim.userId}`}
-      className="group flex items-center gap-5 border-b border-[#1a1f27] px-4 py-4 transition-colors hover:bg-[#0d1117]"
-    >
+    <div className="group flex items-center gap-5 border-b border-[#1a1f27] px-4 py-4 transition-colors hover:bg-[#0d1117]">
       {/* Rank */}
       <span className={`w-8 shrink-0 text-right text-sm font-black tabular-nums ${rankStyle(rank)}`}>
         {String(rank).padStart(2, "0")}
@@ -54,7 +52,7 @@ function EarnerRow({ claim, rank }: { claim: EarningClaim; rank: number }) {
       <span className={`size-2 shrink-0 rounded-full ${claimDot[claim.claimType]}`} />
 
       {/* Name + role */}
-      <div className="min-w-0 flex-1">
+      <Link href={`/profile/${claim.userId}`} className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-[#f0f6fc] group-hover:text-white">
           {displayName}
         </p>
@@ -62,14 +60,7 @@ function EarnerRow({ claim, rank }: { claim: EarningClaim; rank: number }) {
           {claim.role}
           {claim.city ? <> &middot; <MapPin className="mb-0.5 inline size-3" /> {claim.city}</> : null}
         </p>
-      </div>
-
-      {/* Mentor badge */}
-      {mentorOffer && (
-        <span className="hidden shrink-0 text-[10px] font-semibold uppercase tracking-widest text-[#3FB950] sm:block">
-          Mentor
-        </span>
-      )}
+      </Link>
 
       {/* Verified check */}
       {claim.verificationTier > 0 && (
@@ -85,7 +76,23 @@ function EarnerRow({ claim, rank }: { claim: EarningClaim; rank: number }) {
           {claim.amountBasis.replaceAll("_", " ")}
         </p>
       </div>
-    </Link>
+
+      {/* Book button — only for mentors */}
+      {mentorOffer ? (
+        <Link
+          href={mentorOffer.calendlyUrl ?? `/profile/${claim.userId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden shrink-0 items-center gap-1.5 border border-[#3FB950] px-3 py-1.5 text-xs font-semibold text-[#3FB950] transition-colors hover:bg-[#3FB950] hover:text-[#0a0c10] sm:flex"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <CalendarDays className="size-3" />
+          Book · {formatCurrency(mentorOffer.rateCents)}
+        </Link>
+      ) : (
+        <span className="hidden w-[100px] shrink-0 sm:block" />
+      )}
+    </div>
   );
 }
 
@@ -96,13 +103,14 @@ export function Leaderboard({
   claims: EarningClaim[];
   cities: string[];
 }) {
-  const [claimType, setClaimType] = useState<ClaimType | "all">("all");
+  const [claimType, setClaimType] = useState<ClaimType | "all" | "mentors">("mentors");
   const [city, setCity] = useState("all");
   const [sort, setSort] = useState<"amount" | "recent">("amount");
 
   const claims = useMemo(() => {
     let list = publicClaims(rawClaims);
-    if (claimType !== "all") list = list.filter((c) => c.claimType === claimType);
+    if (claimType === "mentors") list = list.filter((c) => !!getMentorOfferForClaim(c.id));
+    else if (claimType !== "all") list = list.filter((c) => c.claimType === claimType);
     if (city !== "all") list = list.filter((c) => c.city === city);
     if (sort === "amount") list = [...list].sort((a, b) => b.amountCents - a.amountCents);
     if (sort === "recent") list = [...list].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));

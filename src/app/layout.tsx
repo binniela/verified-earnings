@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
 
 const alliance = localFont({
   src: [
@@ -15,8 +14,8 @@ const alliance = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Verified Earnings",
-  description: "Learn from people whose results are verified.",
+  title: "NQ Replay Lab",
+  description: "Local-first E-mini Nasdaq-100 futures replay and backtesting.",
 };
 
 export default function RootLayout({
@@ -29,7 +28,6 @@ export default function RootLayout({
       <body
         className={`${alliance.variable} antialiased`}
       >
-        <SiteHeader />
         {children}
       </body>
     </html>

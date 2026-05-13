@@ -10,12 +10,12 @@ export function SiteHeader() {
         </Link>
 
         <nav className="flex items-center gap-6">
+          <Link href="/mentors" className="text-xs font-semibold text-[#3FB950] hover:text-white transition-colors">
+            Mentors
+          </Link>
           <Link href="/map" className="flex items-center gap-1.5 text-xs text-[#8b949e] hover:text-[#f0f6fc] transition-colors">
             <Map className="size-3.5" />
             Map
-          </Link>
-          <Link href="/mentors" className="text-xs text-[#8b949e] hover:text-[#f0f6fc] transition-colors">
-            Mentors
           </Link>
           <Link href="/dashboard" className="text-xs text-[#8b949e] hover:text-[#f0f6fc] transition-colors">
             Dashboard
@@ -26,7 +26,7 @@ export function SiteHeader() {
           href="/claim/new"
           className="inline-flex h-8 items-center border border-[#30363d] px-4 text-xs font-semibold text-[#f0f6fc] hover:border-[#8b949e] transition-colors"
         >
-          + Add yourself
+          Get verified
         </Link>
       </div>
     </header>

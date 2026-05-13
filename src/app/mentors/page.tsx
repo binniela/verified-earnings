@@ -41,7 +41,7 @@ export default function MentorsPage({
       <div className="mb-8">
         <h1 className="text-3xl font-black text-[#f0f6fc]">Mentors</h1>
         <p className="mt-2 text-sm text-[#8b949e]">
-          Every mentor's offer is tied to a verified earning claim. No vibes, no unverified credentials.
+          Every mentor&apos;s offer is tied to a verified earning claim. No vibes, no unverified credentials.
         </p>
       </div>
 
@@ -114,10 +114,13 @@ export default function MentorsPage({
                 <div className="mt-4 flex items-center justify-between border-t border-[#1a1f27] pt-4">
                   <span className="text-base font-black text-[#f0f6fc]">
                     {formatCurrency(offer.rateCents)}
+                    <span className="ml-1 text-xs font-normal text-[#8b949e]">/ {offer.durationMinutes} min</span>
                   </span>
                   <Link
-                    href={`/profile/${user.id}`}
-                    className="flex items-center gap-1.5 text-xs text-[#58A6FF] hover:text-white transition-colors"
+                    href={offer.calendlyUrl ?? `/profile/${user.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 border border-[#3FB950] px-3 py-1.5 text-xs font-semibold text-[#3FB950] transition-colors hover:bg-[#3FB950] hover:text-[#0a0c10]"
                   >
                     <CalendarDays className="size-3.5" />
                     Book session
